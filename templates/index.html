@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Buddy Pro - The Ultimate Mass Learning Platform</title>
+  <style>
+    .bot-message p, .message-content p {
+        margin-bottom: 10px;
+        line-height: 1.6;
+    }
+
+    .bot-message ul, .bot-message ol {
+        margin-left: 20px;
+        margin-bottom: 10px;
+    }
+
+    .bot-message strong {
+        color: #ffffff; 
+    }
+</style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    /* Dark Mode Defaults */
+    body.dark {
+      background: #07090e;
+      color: #f8fafc;
+    }
+    body.dark .glass {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    body.dark .glass-sidebar {
+      background: rgba(10, 14, 23, 0.9);
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    body.dark .glow-effect {
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.05) 50%, transparent 70%);
+    }
+
+    /* Light Mode Styles */
+    body.light {
+      background: #f1f5f9;
+      color: #1e293b;
+    }
+    body.light .glass {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(203, 213, 225, 0.6);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    }
+    body.light .glass-sidebar {
+      background: rgba(255, 255, 255, 0.95);
+      border-right: 1px solid rgba(203, 213, 225, 0.6);
+    }
+    body.light .glow-effect {
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, rgba(168, 85, 247, 0.03) 50%, transparent 70%);
+    }
+    body.light input {
+      color: #0f172a !important;
+    }
+    body.light input::placeholder {
+      color: #94a3b8 !important;
+    }
+
+    .glow-effect {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      top: -100px;
+      left: 20%;
+      z-index: -1;
+      filter: blur(60px);
+      transition: background 0.3s ease;
+    }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.3); border-radius: 10px; }
+  </style>
+</head>
+<body class="dark flex h-screen w-screen overflow-hidden relative">
+
+  <!-- Background Ambient Glow -->
+  <div class="glow-effect"></div>
+
+  <!-- Sidebar Navigation -->
+  <aside class="w-80 glass-sidebar flex flex-col justify-between hidden md:flex p-5 z-10 h-full">
+    <div class="flex-1 overflow-y-auto pr-1">
+      
+      <!-- Logo Brand -->
+      <div class="flex items-center space-x-3 mb-6">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center font-bold text-lg shadow-lg shadow-indigo-500/20 text-white shrink-0">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-base tracking-wide">Study Buddy</h1>
+          <p class="text-xs text-indigo-500 font-medium">Global AI Mass Learning Hub</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <button id="new-chat-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 transition text-white font-medium py-2.5 px-4 rounded-xl text-sm flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/30 mb-4">
+        <i class="fa-solid fa-plus text-xs"></i>
+        <span>New Study Session</span>
+      </button>
+
+      <!-- Sidebar Search Filter -->
+      <div class="mb-4">
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-xs opacity-50"></i>
+          <input 
+            type="text" 
+            id="subject-search" 
+            placeholder="Search subjects..." 
+            class="w-full bg-white/5 border border-white/10 rounded-xl pl-8 pr-3 py-2 text-xs focus:outline-none focus:border-indigo-500 transition"
+          >
+        </div>
+      </div>
+
+      <!-- All Subject Categories -->
+      <div id="subject-list" class="space-y-4">
+        
+        <!-- STEM & Technology -->
+        <div>
+          <p class="text-[10px] font-bold opacity-50 uppercase tracking-wider px-2 mb-1.5">STEM & Sciences</p>
+          <div class="space-y-0.5">
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Mathematics & Logic">
+              <i class="fa-solid fa-calculator text-indigo-400 w-4"></i><span>Mathematics</span>
+            </button>
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Physics & Quantum Mechanics">
+              <i class="fa-solid fa-atom text-blue-400 w-4"></i><span>Physics</span>
+            </button>
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Chemistry & Biochemistry">
+              <i class="fa-solid fa-flask text-teal-400 w-4"></i><span>Chemistry</span>
+            </button>
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Biology & Genetics">
+              <i class="fa-solid fa-dna text-emerald-400 w-4"></i><span>Biology & Life Sciences</span>
+            </button>
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Medicine & Human Anatomy">
+              <i class="fa-solid fa-heart-pulse text-rose-400 w-4"></i><span>Medicine & Health</span>
+            </button>
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Computer Science & AI">
+              <i class="fa-solid fa-code text-cyan-400 w-4"></i><span>Computer Science</span>
+            </button>
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Engineering & Applied Sciences">
+              <i class="fa-solid fa-gears text-amber-400 w-4"></i><span>Engineering</span>
+            </button>
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Environmental Science & Ecology">
+              <i class="fa-solid fa-leaf text-green-400 w-4"></i><span>Environmental Science</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Social Sciences & Business -->
+        <div>
+          <p class="text-[10px] font-bold opacity-50 uppercase tracking-wider px-2 mb-1.5">Social Sciences & Business</p>
+          <div class="space-y-0.5">
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Economics & Micro/Macroeconomics">
+              <i class="fa-solid fa-chart-line text-sky-400 w-4"></i><span>Economics</span>
+            </button>
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Psychology & Behavioral Science">
+              <i class="fa-solid fa-brain text-purple-400 w-4"></i><span>Psychology</span>
+            </button>
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Business, Marketing & Entrepreneurship">
+              <i class="fa-solid fa-briefcase text-yellow-400 w-4"></i><span>Business & Management</span>
+            </button>
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Finance, Accounting & Banking">
+              <i class="fa-solid fa-coins text-emerald-400 w-4"></i><span>Finance & Accounting</span>
+            </button>
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Political Science & Governance">
+              <i class="fa-solid fa-landmark-flag text-indigo-400 w-4"></i><span>Political Science</span>
+            </button>
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Sociology & Anthropology">
+              <i class="fa-solid fa-users text-orange-400 w-4"></i><span>Sociology</span>
+            </button>
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Law, Jurisprudence & Ethics">
+              <i class="fa-solid fa-scale-balanced text-red-400 w-4"></i><span>Law & Legal Studies</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Humanities & Arts -->
+        <div>
+          <p class="text-[10px] font-bold opacity-50 uppercase tracking-wider px-2 mb-1.5">Humanities & Culture</p>
+          <div class="space-y-0.5">
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="World History & Archaeology">
+              <i class="fa-solid fa-landmark text-amber-500 w-4"></i><span>World History</span>
+            </button>
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Literature, Poetry & Prose">
+              <i class="fa-solid fa-book-open text-rose-400 w-4"></i><span>Literature</span>
+            </button>
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Philosophy & Logic">
+              <i class="fa-solid fa-lightbulb text-yellow-300 w-4"></i><span>Philosophy</span>
+            </button>
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Languages, Grammar & Linguistics">
+              <i class="fa-solid fa-language text-violet-400 w-4"></i><span>Languages & Linguistics</span>
+            </button>
+            <button class="subject-chip w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5" data-topic="Fine Arts, Music & Art History">
+              <i class="fa-solid fa-palette text-pink-400 w-4"></i><span>Fine Arts & Music</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Ultimate Mass Learning Utilities -->
+      <div class="mt-5 space-y-1">
+        <p class="text-[10px] font-bold opacity-50 uppercase tracking-wider px-2 mb-1.5">Mass Learning Toolkit</p>
+        
+        <button id="quiz-mode-btn" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5">
+          <i class="fa-solid fa-clipboard-question text-purple-400 w-4"></i><span>Generate Practice Quiz</span>
+        </button>
+        
+        <button id="summarize-btn" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5">
+          <i class="fa-solid fa-file-lines text-cyan-400 w-4"></i><span>Summarize Long Notes</span>
+        </button>
+
+        <button id="eli10-btn" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5">
+          <i class="fa-solid fa-child text-amber-400 w-4"></i><span>Explain Like I'm 10</span>
+        </button>
+
+        <button id="flashcards-btn" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5">
+          <i class="fa-solid fa-clone text-emerald-400 w-4"></i><span>Active Recall Flashcards</span>
+        </button>
+
+        <button id="solver-btn" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5">
+          <i class="fa-solid fa-list-ol text-blue-400 w-4"></i><span>Step-by-Step Solver</span>
+        </button>
+
+        <button id="feynman-btn" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5">
+          <i class="fa-solid fa-chalkboard-user text-rose-400 w-4"></i><span>Feynman Technique Test</span>
+        </button>
+
+        <!-- New Added Student Power Tools -->
+        <button id="essay-btn" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5">
+          <i class="fa-solid fa-pen-nib text-indigo-400 w-4"></i><span>Essay & Report Outline</span>
+        </button>
+
+        <button id="citation-btn" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5">
+          <i class="fa-solid fa-quote-right text-yellow-400 w-4"></i><span>Citation Formatter (APA/MLA)</span>
+        </button>
+
+        <button id="code-debug-btn" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5">
+          <i class="fa-solid fa-bug text-red-400 w-4"></i><span>Code & Logic Debugger</span>
+        </button>
+
+        <button id="vocab-btn" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5">
+          <i class="fa-solid fa-book text-teal-400 w-4"></i><span>Vocabulary & Terminology</span>
+        </button>
+
+        <button id="schedule-btn" class="w-full text-left px-2.5 py-1.5 rounded-lg text-xs opacity-80 hover:opacity-100 hover:bg-indigo-500/10 transition flex items-center space-x-2.5">
+          <i class="fa-solid fa-calendar-days text-orange-400 w-4"></i><span>Exam Study Planner</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Pomodoro Focus Timer Widget -->
+    <div class="glass p-3 rounded-2xl shadow-sm mt-3 shrink-0">
+      <div class="flex justify-between items-center mb-1.5">
+        <span class="text-xs font-medium opacity-70 flex items-center gap-1.5">
+          <i class="fa-solid fa-clock text-indigo-500"></i> Pomodoro Timer
+        </span>
+        <span id="timer-display" class="text-xs font-bold text-indigo-500 font-mono">25:00</span>
+      </div>
+      <div class="flex space-x-2">
+        <button id="timer-toggle" class="flex-1 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-500 text-xs py-1 rounded-lg transition font-medium">Start</button>
+        <button id="timer-reset" class="px-2.5 opacity-70 hover:opacity-100 text-xs py-1 rounded-lg transition"><i class="fa-solid fa-rotate-right"></i></button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Chat Workspace -->
+  <main class="flex-1 flex flex-col h-full relative z-10 overflow-hidden">
+    
+    <!-- Top Header Bar -->
+    <header class="h-16 glass border-b flex items-center justify-between px-6 shrink-0">
+      <div class="flex items-center space-x-3">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50 animate-pulse"></span>
+        <h2 class="text-sm font-semibold">Active Subject: <span id="current-topic-label" class="text-indigo-500 font-normal">General Learning</span></h2>
+      </div>
+      <div class="flex items-center space-x-3">
+        <span class="text-xs bg-indigo-500/10 text-indigo-500 border border-indigo-500/20 px-3 py-1 rounded-full font-medium hidden sm:inline-block">
+          <i class="fa-solid fa-bolt mr-1 text-amber-500"></i> Llama 3.2 (Local)
+        </span>
+
+        <!-- Theme Toggle Switch (Top Right) -->
+        <button id="theme-toggle" class="w-10 h-10 rounded-xl glass hover:scale-105 flex items-center justify-center transition shadow-sm" title="Toggle Light/Dark Mode">
+          <i id="theme-icon" class="fa-solid fa-sun text-amber-400 text-sm"></i>
+        </button>
+
+        <button id="clear-btn" title="Clear Chat History" class="w-10 h-10 rounded-xl glass hover:scale-105 flex items-center justify-center opacity-70 hover:opacity-100 transition shadow-sm">
+          <i class="fa-solid fa-trash-can text-xs"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Chat Messages Scroll Area -->
+    <div id="chat-container" class="flex-1 overflow-y-auto p-6 space-y-6">
+      
+      <!-- Welcome AI Card -->
+      <div class="flex items-start space-x-4 max-w-2xl">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white font-bold shrink-0 shadow-lg shadow-indigo-600/30">
+          <i class="fa-solid fa-robot text-sm"></i>
+        </div>
+        <div class="glass p-5 rounded-2xl rounded-tl-none space-y-2 text-sm leading-relaxed shadow-xl">
+          <p class="font-semibold">Welcome to the Global Mass Learning Platform!</p>
+          <p class="opacity-80">Choose any subject or study utility from the sidebar (Essay outlines, citation builders, code debuggers, exam schedules, and more) to begin mastering your education!</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Input Dock -->
+    <div class="p-6 shrink-0">
+      <div class="max-w-3xl mx-auto">
+        <form id="chat-form" class="glass rounded-2xl p-2 flex items-center shadow-2xl focus-within:border-indigo-500 transition">
+          <input 
+            type="text" 
+            id="user-input" 
+            placeholder="Ask anything, request an essay outline, format citations, or paste code..." 
+            class="flex-1 bg-transparent px-4 py-2.5 text-sm focus:outline-none"
+            required
+          >
+          <button 
+            type="submit" 
+            class="bg-indigo-600 hover:bg-indigo-500 transition text-white px-5 py-2.5 rounded-xl font-medium text-sm flex items-center space-x-2 shadow-lg shadow-indigo-600/30"
+          >
+            <span>Send</span>
+            <i class="fa-solid fa-paper-plane text-xs"></i>
+          </button>
+        </form>
+        <div class="flex justify-between items-center mt-2 px-2 text-[11px] opacity-60">
+          <span>Powered by local Ollama & Llama 3.2</span>
+          <span>Press Enter to send message</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Frontend JavaScript Logic -->
+  <script>
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('user-input');
+    const chatContainer = document.getElementById('chat-container');
+    const clearBtn = document.getElementById('clear-btn');
+    const newChatBtn = document.getElementById('new-chat-btn');
+    const topicLabel = document.getElementById('current-topic-label');
+    const subjectChips = document.querySelectorAll('.subject-chip');
+    const subjectSearch = document.getElementById('subject-search');
+    
+    // Utilities
+    const quizModeBtn = document.getElementById('quiz-mode-btn');
+    const summarizeBtn = document.getElementById('summarize-btn');
+    const eli10Btn = document.getElementById('eli10-btn');
+    const flashcardsBtn = document.getElementById('flashcards-btn');
+    const solverBtn = document.getElementById('solver-btn');
+    const feynmanBtn = document.getElementById('feynman-btn');
+    const essayBtn = document.getElementById('essay-btn');
+    const citationBtn = document.getElementById('citation-btn');
+    const codeDebugBtn = document.getElementById('code-debug-btn');
+    const vocabBtn = document.getElementById('vocab-btn');
+    const scheduleBtn = document.getElementById('schedule-btn');
+
+    // Theme Toggle Logic
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const body = document.body;
+
+    themeToggle.addEventListener('click', () => {
+      if (body.classList.contains('dark')) {
+        body.classList.replace('dark', 'light');
+        themeIcon.className = 'fa-solid fa-moon text-indigo-600 text-sm';
+      } else {
+        body.classList.replace('light', 'dark');
+        themeIcon.className = 'fa-solid fa-sun text-amber-400 text-sm';
+      }
+    });
+
+    // Sidebar Subject Search Filter
+    subjectSearch.addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase();
+      subjectChips.forEach(chip => {
+        const text = chip.textContent.toLowerCase();
+        if (text.includes(term)) {
+          chip.style.display = 'flex';
+        } else {
+          chip.style.display = 'none';
+        }
+      });
+    });
+
+    // Pomodoro Timer Logic
+    let timerInterval = null;
+    let timeLeft = 25 * 60;
+    let isRunning = false;
+    const timerDisplay = document.getElementById('timer-display');
+    const timerToggle = document.getElementById('timer-toggle');
+    const timerReset = document.getElementById('timer-reset');
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+      const secs = (timeLeft % 60).toString().padStart(2, '0');
+      timerDisplay.textContent = `${mins}:${secs}`;
+    }
+
+    timerToggle.addEventListener('click', () => {
+      if (isRunning) {
+        clearInterval(timerInterval);
+        timerToggle.textContent = 'Start';
+        isRunning = false;
+      } else {
+        isRunning = true;
+        timerToggle.textContent = 'Pause';
+        timerInterval = setInterval(() => {
+          if (timeLeft > 0) {
+            timeLeft--;
+            updateTimerDisplay();
+          } else {
+            clearInterval(timerInterval);
+            alert('Pomodoro session finished! Take a 5-minute break.');
+            isRunning = false;
+            timerToggle.textContent = 'Start';
+          }
+        }, 1000);
+      }
+    });
+
+    timerReset.addEventListener('click', () => {
+      clearInterval(timerInterval);
+      isRunning = false;
+      timeLeft = 25 * 60;
+      updateTimerDisplay();
+      timerToggle.textContent = 'Start';
+    });
+
+    // Subject selection
+    subjectChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const topic = chip.getAttribute('data-topic');
+        topicLabel.textContent = topic;
+        sendMessage(`Let's focus our study session on ${topic}. Give me a quick high-level overview and ask me where I want to start.`);
+      });
+    });
+
+    // Utilities Event Listeners
+    quizModeBtn.addEventListener('click', () => {
+      sendMessage('Generate 3 challenging multiple-choice practice questions on our current study topic with detailed explanations.');
+    });
+
+    summarizeBtn.addEventListener('click', () => {
+      sendMessage('Provide a structured template and framework on how to effectively summarize complex study notes using active recall.');
+    });
+
+    eli10Btn.addEventListener('click', () => {
+      sendMessage('Explain the core concept we are studying right now as if I am 10 years old, using a fun, relatable analogy.');
+    });
+
+    flashcardsBtn.addEventListener('click', () => {
+      sendMessage('Create 3 Active Recall flashcards (Question & Answer pairs) based on our current study topic.');
+    });
+
+    solverBtn.addEventListener('click', () => {
+      sendMessage('Act as a Step-by-Step Problem Solver. Ask me for the problem or equation I am stuck on, and break down the solution line-by-line.');
+    });
+
+    feynmanBtn.addEventListener('click', () => {
+      sendMessage('Initiate a Feynman Technique test. Ask me to explain our current topic back to you in my own words so you can critique my understanding and point out any gaps.');
+    });
+
+    essayBtn.addEventListener('click', () => {
+      sendMessage('Act as an Academic Writing Coach. Ask me for my essay or research paper topic, and generate a comprehensive outline with thesis statements, body paragraph arguments, and a conclusion structure.');
+    });
+
+    citationBtn.addEventListener('click', () => {
+      sendMessage('Act as a Citation Formatter. Ask me for the source details (author, title, year, URL/publisher) and format it accurately in APA, MLA, and Harvard citation styles.');
+    });
+
+    codeDebugBtn.addEventListener('click', () => {
+      sendMessage('Act as an expert Code Debugger and Sandbox. Ask me to paste my broken code or logic snippet, and explain the bug, fix it, and optimize it.');
+    });
+
+    vocabBtn.addEventListener('click', () => {
+      sendMessage('Generate 3 key high-level vocabulary words or technical terms for our current subject, along with definitions, etymology, and example sentences.');
+    });
+
+    scheduleBtn.addEventListener('click', () => {
+      sendMessage('Act as an Exam Study Planner. Ask me what exam or milestone I am preparing for and how many days I have left, then build a customized day-by-day study schedule.');
+    });
+
+    newChatBtn.addEventListener('click', () => {
+      chatContainer.innerHTML = `
+        <div class="flex items-start space-x-4 max-w-2xl">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white font-bold shrink-0 shadow-lg shadow-indigo-600/30">
+            <i class="fa-solid fa-robot text-sm"></i>
+          </div>
+          <div class="glass p-5 rounded-2xl rounded-tl-none space-y-2 text-sm leading-relaxed shadow-xl">
+            <p class="font-semibold">New study session initialized!</p>
+            <p class="opacity-80">What subject or mass learning tool would you like to use?</p>
+          </div>
+        </div>
+      `;
+    });
+
+    function appendUserMessage(text) {
+      chatContainer.innerHTML += `
+        <div class="flex items-start space-x-4 max-w-2xl ml-auto justify-end">
+          <div class="glass p-5 rounded-2xl rounded-tr-none space-y-1 text-sm leading-relaxed shadow-xl bg-indigo-600/20 border-indigo-500/30">
+            ${escapeHtml(text)}
+          </div>
+          <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shrink-0 shadow-lg">
+            <i class="fa-solid fa-user text-xs"></i>
+          </div>
+        </div>
+      `;
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function appendLoading(id) {
+      chatContainer.innerHTML += `
+        <div id="${id}" class="flex items-start space-x-4 max-w-2xl">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white font-bold shrink-0 shadow-lg">
+            <i class="fa-solid fa-robot text-sm"></i>
+          </div>
+          <div class="glass p-5 rounded-2xl rounded-tl-none text-sm opacity-60 animate-pulse">
+            Study Buddy is thinking...
+          </div>
+        </div>
+      `;
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function appendAiMessage(text) {
+      chatContainer.innerHTML += `
+        <div class="flex items-start space-x-4 max-w-2xl">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white font-bold shrink-0 shadow-lg">
+            <i class="fa-solid fa-robot text-sm"></i>
+          </div>
+          <div class="glass p-5 rounded-2xl rounded-tl-none space-y-2 text-sm leading-relaxed shadow-xl">
+            ${text.replace(/\n/g, '<br>')}
+          </div>
+        </div>
+      `;
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.innerText = text;
+      return div.innerHTML;
+    }
+
+
+    async function sendMessage(text) {
+    if (!text.trim()) return;
+
+    // Display user message in chat
+    appendUserMessage(text);
+    input.value = '';
+
+    // Create unique loading container for AI response
+    const loadId = 'load-' + Date.now();
+    appendLoading(loadId);
+
+    try {
+        // Send request to Flask streaming backend
+        const res = await fetch('/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: text })
+        });
+
+        if (!res.ok) throw new Error('Network response was not ok');
+
+        // Initialize stream reader
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let fullResponse = '';
+
+        // Get the loading message element
+        const loadElement = document.getElementById(loadId);
+        if (loadElement) {
+            loadElement.textContent = ''; // Clear "thinking..." placeholder
+        }
+
+        // Read stream chunks as they arrive from Ollama
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value, { stream: true });
+            fullResponse += chunk;
+
+            if (loadElement) {
+                loadElement.textContent = fullResponse; // Render word-by-word instantly
+            }
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        const loadElement = document.getElementById(loadId);
+        if (loadElement) {
+            loadElement.textContent = ' Connection error. Please make sure study-buddy.py is running.';
+        }
+    }
+}
+    
+
+
+     
+          
+      
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      sendMessage(input.value);
+    });
+
+    clearBtn.addEventListener('click', () => {
+      newChatBtn.click();
+    });
+  </script>
+</body>
+</html>
